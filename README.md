@@ -31,7 +31,7 @@ To run this project locally, follow these steps:
 1. Clone the repository to your local machine:
 
    ```sh
-   git clone https://github.com/your-username/vue3-express-jwt-auth.git
+   git clone https://github.com/Hackersgoddest/vue3-express-jwt-auth.git
    ```
 
 2. Navigate to the project directory:
