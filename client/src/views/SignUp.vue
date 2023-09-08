@@ -1,52 +1,37 @@
 <script setup>
-import axios from "../axios";
-import { ref } from "vue";
+import { shallowRef } from "vue";
 import { useRouter } from "vue-router";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons"; 
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import {
+  useFetch,
+  hasErrorOccured,
+  errorMessage,
+  usernameError,
+  emailError,
+  passwordError,
+  turnOffError,
+} from "../fetch";
+import { store } from "../store";
 
-
-const user = ref({
+const user = shallowRef({
   username: null,
   email: null,
   password: null,
 });
-const showPassword = ref(false);
 const router = useRouter();
-const hasErrorOccured = ref(false);
-const errorMessage = ref(null);
-const emailError = ref(false);
-const usernameError = ref(false);
-const passwordError = ref(false);
+const showPassword = shallowRef(false);
 
-const turnOffError = () => {
-  emailError.value = false;
-  usernameError.value = false;
-  passwordError.value = false;
-  hasErrorOccured.value = false;
+const hideAllErrors = () => {
+  turnOffError();
 };
 
 const register = async () => {
   try {
-    const response = await axios.post("auth/register/", {
-      username: user.value.username,
-      email: user.value.email,
-      password: user.value.password,
-    });
-    localStorage.setItem("token", response.data.token);
-    router.push("/");
+    await useFetch("auth/register/", user.value);
+    if (store.hasLogin) router.push("/");
   } catch (err) {
-    console.log("error: ", err.response.data);
-    if (err.response.data.error == "Username field is required") {
-      usernameError.value = true;
-    } else if (err.response.data.error == "Email field is required") {
-      emailError.value = true;
-    } else if (err.response.data.error == "Password field is required") {
-      passwordError.value = true;
-    } else {
-      hasErrorOccured.value = true;
-      errorMessage.value = err.response.data.error;
-    }
+    console.log(err);
   }
 };
 
@@ -59,7 +44,7 @@ const goToLogin = () => {
     <form
       class="register-form"
       @submit.prevent="register"
-      @click="turnOffError"
+      @click="hideAllErrors"
     >
       <p :class="{ Gerror: hasErrorOccured }" v-show="hasErrorOccured">
         {{ errorMessage }}

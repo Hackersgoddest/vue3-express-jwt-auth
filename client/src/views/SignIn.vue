@@ -1,54 +1,37 @@
 <script setup>
-import axios from "../axios";
-import { ref } from "vue";
+import { shallowRef } from "vue";
 import { useRouter } from "vue-router";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons"; 
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import {
+  useFetch,
+  hasErrorOccured,
+  errorMessage,
+  emailError,
+  passwordError,
+  passwordErrorMessge,
+  turnOffError,
+} from "../fetch";
+import { store } from "../store";
 
-const user = ref({
+const user = shallowRef({
   email: null,
   password: null,
 });
-const showPassword = ref(false);
 const router = useRouter();
-const hasErrorOccured = ref(false);
-const errorMessage = ref(null);
-const emailError = ref(false);
-const passwordError = ref(false);
-const passwordErrorMessge = ref(null)
+const showPassword = shallowRef(false);
 
 const login = async () => {
   try {
-    const response = await axios.post("auth/login/", {
-      email: user.value.email,
-      password: user.value.password,
-    });
-    localStorage.setItem("token", response.data.token);
-    user.value.email = null;
-    user.value.password = null;
-    router.push("/");
+    await useFetch("auth/login/", user.value);
+    if (store.hasLogin) router.push("/");
   } catch (err) {
-    console.log("error: ", err.response.data);
-    if (err.response.data.error == "Email field is required") {
-      emailError.value = true;
-    } else if (err.response.data.error == "Password field is required") {
-      passwordErrorMessge.value = null
-      passwordError.value = true;
-    } else if(err.response.data.error == "Invalid password") {
-      passwordError.value = true;
-      passwordErrorMessge.value = err.response.data.error;
-    }
-    else {
-      hasErrorOccured.value = true;
-      errorMessage.value = err.response.data.error;
-    }
+    console.log(err);
   }
 };
 
-const turnOffError = () => {
-  emailError.value = false;
-  passwordError.value = false;
-  hasErrorOccured.value = false;
+const hideAllErrors = () => {
+  turnOffError();
 };
 
 const goToRegister = () => {
@@ -57,11 +40,7 @@ const goToRegister = () => {
 </script>
 <template>
   <div class="login-container">
-    <form
-      class="login-form"
-      @submit.prevent="login"
-      @click="turnOffError"
-    >
+    <form class="login-form" @submit.prevent="login" @click="hideAllErrors">
       <p :class="{ Gerror: hasErrorOccured }" v-show="hasErrorOccured">
         {{ errorMessage }}
       </p>
@@ -86,9 +65,9 @@ const goToRegister = () => {
       <div class="input-group">
         <label for="password" class="input-label"
           >Password
-          <span v-show="passwordError" :class="{ error: passwordError }"
-            >{{ passwordErrorMessge ? passwordErrorMessge : 'required'}}</span
-          >
+          <span v-show="passwordError" :class="{ error: passwordError }">{{
+            passwordErrorMessge ? passwordErrorMessge : "required"
+          }}</span>
         </label>
         <input
           :type="showPassword ? 'text' : 'password'"
