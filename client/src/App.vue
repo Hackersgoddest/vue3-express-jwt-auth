@@ -1,10 +1,12 @@
 <script setup>
 import { RouterLink, RouterView, useRouter, useRoute } from "vue-router";
+import { store } from "./store";
 
 const router = useRouter();
 const route = useRoute();
 const logout = async () => {
   localStorage.clear();
+  store.updateName(null);
   router.push('/login')
 }
 </script>
