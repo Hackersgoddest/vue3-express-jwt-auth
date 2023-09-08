@@ -8,8 +8,8 @@ const logout = async () => {
   localStorage.clear();
   store.updateHasLogin(false);
   store.updateName(null);
-  router.push('/login')
-}
+  router.push("/login");
+};
 </script>
 
 <template>
@@ -25,10 +25,7 @@ const logout = async () => {
           to="/"
           >Home</RouterLink
         >
-        <a
-          @click="logout"
-          class="logout nav-link"
-          >Logout</a>
+        <a @click="logout" class="logout nav-link">Logout</a>
       </template>
 
       <template v-else>
@@ -48,7 +45,12 @@ const logout = async () => {
     </nav>
   </header>
 
-  <RouterView />
+  <router-view v-slot="{ Component}">
+    <!-- Use any custom transition and  to `fade` -->
+    <transition name="fade" mode="out-in">
+      <component :is="Component" :key="$route.path" />
+    </transition>
+  </router-view>
 </template>
 
 <style>
@@ -91,5 +93,15 @@ const logout = async () => {
 
 .logout {
   cursor: pointer;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.4s;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>
