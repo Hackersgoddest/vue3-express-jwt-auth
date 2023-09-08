@@ -6,6 +6,7 @@ const router = useRouter();
 const route = useRoute();
 const logout = async () => {
   localStorage.clear();
+  store.updateHasLogin(false);
   store.updateName(null);
   router.push('/login')
 }
