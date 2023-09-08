@@ -32,33 +32,13 @@ const hideAllErrors = () => {
   turnOffError();
 };
 
-const register = async () => {
+const handleAuth = async () => {
   try {
-    await useFetch("auth/register/", user.value);
+    await useFetch(`auth/${props?.authName}/`, user.value);
     if (store.hasLogin) router.push("/");
   } catch (err) {
     console.log(err);
   }
-};
-
-const login = async () => {
-  try {
-    await useFetch("auth/login/", user.value);
-    if (store.hasLogin) router.push("/");
-  } catch (err) {
-    console.log(err);
-  }
-};
-
-const handleAuth = () => {
-  if (props.authName == "login") {
-    login();
-    return;
-  } else if (props.authName == "register") {
-    register();
-    return;
-  }
-  return;
 };
 
 const goTo = () => {
