@@ -68,7 +68,7 @@ To run this project locally, follow these steps:
         npm run dev
         ```
     
-    - Start the Express.js server:
+    - Start the Express.js server(make sure mysql server is up and running):
         ```sh
         cd server
         npm run migrate
